@@ -10,8 +10,6 @@
   <title>業務準備チェックリスト</title>
   <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%E6%A5%AD%E5%8B%99%E6%BA%96%E5%82%99%E3%83%81%E3%82%A7%E3%83%83%E3%82%AF%E3%83%AA%E3%82%B9%E3%83%88%22%2C%22short_name%22%3A%22%E6%A5%AD%E5%8B%99%E3%83%81%E3%82%A7%E3%83%83%E3%82%AF%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0f13%22%2C%22theme_color%22%3A%22%230f0f13%22%2C%22start_url%22%3A%22.%22%7D">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230f0f13'/%3E%3Crect x='36' y='44' width='108' height='14' rx='7' fill='%23e8b86d'/%3E%3Crect x='36' y='68' width='80' height='14' rx='7' fill='%237eb8a4'/%3E%3Crect x='36' y='92' width='94' height='14' rx='7' fill='%23a98fd4'/%3E%3Ccircle cx='24' cy='51' r='8' fill='%23e8b86d'/%3E%3Ccircle cx='24' cy='75' r='8' fill='%237eb8a4'/%3E%3Ccircle cx='24' cy='99' r='8' fill='%23a98fd4'/%3E%3C/svg%3E">
-  <!-- html2canvas + jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -267,76 +265,54 @@ function recordCompletion(){
   saveCats(cats);tab="history";render();
 }
 
-/* ── PDF生成（チェックリストhtml2canvas＋画像jsPDF直接配置）── */
+/* ══════════════════════════════════════
+   PDF生成
+   1ページ目：jsPDFでテキスト直接描画（日本語はCanvasAPIで描画）
+   2ページ目：レイアウト画像（<img>タグ経由でcanvasに描画→jsPDF）
+══════════════════════════════════════ */
 async function generatePDF(){
   const overlay=document.getElementById("pdf-overlay");
   overlay.classList.add("show");
   try{
     const{jsPDF}=window.jspdf;
-    const A4W=210,A4H=297,M=12;
-
-    // Noto Sans JP読み込み
-    if(!document.getElementById("noto-font-link")){
-      const link=document.createElement("link");
-      link.id="noto-font-link";
-      link.rel="stylesheet";
-      link.href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap";
-      document.head.appendChild(link);
-      await new Promise(r=>setTimeout(r,1400));
-    } else {
-      await new Promise(r=>setTimeout(r,300));
-    }
-
-    const targets=cats.filter(c=>pdfSel[c.id]);
-    const lo=layoutSel?LAYOUTS.find(l=>l.id===layoutSel):null;
-
     const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+    const A4W=210,A4H=297,M=14;
 
-    // ── チェックリスト部分をhtml2canvasでキャプチャ ──
-    const listColMM=lo?110:A4W-M*2; // レイアウトある場合は左110mm
-    const el=document.getElementById("pdf-render");
-    el.style.fontFamily="'Noto Sans JP',sans-serif";
-    el.style.width=(listColMM*3.78)+"px"; // mm→px概算(96dpi)
-    el.innerHTML=buildChecklistHTML(targets);
-    await new Promise(r=>setTimeout(r,600));
+    // ── 1ページ目：チェックリスト（Canvas文字描画→jsPDF） ──
+    const targets=cats.filter(c=>pdfSel[c.id]);
+    const clCanvas=drawChecklistToCanvas(targets);
+    const maxW=A4W-M*2, maxH=A4H-M*2;
+    const clAspect=clCanvas.height/clCanvas.width;
+    let clW=maxW, clH=clW*clAspect;
+    if(clH>maxH){clH=maxH;clW=clH/clAspect;}
+    doc.addImage(clCanvas.toDataURL("image/png"),"PNG",M,M,clW,clH);
 
-    const canvas=await html2canvas(el,{
-      scale:2,backgroundColor:"#ffffff",logging:false,
-      useCORS:true,allowTaint:true,
-    });
-    el.innerHTML="";el.style.width="";
-
-    // チェックリスト画像をPDFに配置
-    const clH=Math.min(canvas.height*(listColMM/canvas.width),A4H-M*2);
-    doc.addImage(canvas.toDataURL("image/png"),"PNG",M,M,listColMM,clH);
-
-    // ── レイアウト画像をjsPDFで直接配置 ──
+    // ── 2ページ目：レイアウト画像 ──
+    const lo=layoutSel?LAYOUTS.find(l=>l.id===layoutSel):null;
     if(lo){
-      const imgX=M+listColMM+6;
-      const imgW=A4W-imgX-M;
-      // ラベルテキスト（jsPDFはASCIIのみなので簡易表記）
-      doc.setFontSize(8);doc.setFont("helvetica","bold");
-      doc.setTextColor(60,60,80);
-      doc.text("Layout: "+lo.label,imgX,M+4);
-
-      // 画像をfetchでArrayBufferとして取得→base64変換（CORSバイパス）
-      try{
-        const resp=await fetch(lo.url);
-        if(!resp.ok) throw new Error("fetch failed");
-        const buf=await resp.arrayBuffer();
-        const b64=arrayBufferToBase64(buf);
-        const mime=lo.url.toLowerCase().endsWith(".png")?"image/png":"image/jpeg";
-        const dataUrl=`data:${mime};base64,${b64}`;
-        const imgH=Math.min(imgW*1.2,A4H-M*2-10);
-        doc.addImage(dataUrl,mime==="image/png"?"PNG":"JPEG",imgX,M+7,imgW,imgH);
-      }catch(e){
-        doc.setFontSize(8);doc.setTextColor(180,80,80);
-        doc.text("(image load failed)",imgX,M+14);
-      }
+      await new Promise((resolve)=>{
+        const img=new Image();
+        // 同一オリジン画像なのでcrossOrigin不要
+        img.onload=()=>{
+          doc.addPage();
+          const natW=img.naturalWidth, natH=img.naturalHeight;
+          const aspect=natH/natW;
+          let iw=A4W-M*2, ih=iw*aspect;
+          if(ih>A4H-M*2){ih=A4H-M*2;iw=ih/aspect;}
+          const ox=M+(A4W-M*2-iw)/2;
+          // 一時canvasに描画してjsPDFへ
+          const tc=document.createElement("canvas");
+          tc.width=natW;tc.height=natH;
+          tc.getContext("2d").drawImage(img,0,0);
+          doc.addImage(tc.toDataURL("image/png"),"PNG",ox,M,iw,ih);
+          resolve();
+        };
+        img.onerror=()=>resolve(); // 失敗しても続行
+        img.src=lo.url;
+      });
     }
 
     doc.save("checklist_"+new Date().toISOString().slice(0,10)+".pdf");
-
   }catch(err){
     alert("PDF生成中にエラーが発生しました。");
     console.error(err);
@@ -345,53 +321,115 @@ async function generatePDF(){
   }
 }
 
-function arrayBufferToBase64(buf){
-  let bin="";
-  const bytes=new Uint8Array(buf);
-  for(let i=0;i<bytes.byteLength;i++) bin+=String.fromCharCode(bytes[i]);
-  return btoa(bin);
-}
+/* Canvas APIで日本語テキストを直接描画してチェックリストを作成 */
+function drawChecklistToCanvas(targets){
+  const PX=2; // 解像度倍率
+  const CW=560*PX;
+  const FONT=`${11*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
+  const FONT_SM=`${9*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
+  const FONT_TITLE=`bold ${15*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
+  const FONT_CAT=`bold ${10*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
+  const PAD=14*PX, ROW=20*PX, CAT_H=22*PX;
 
-/* チェックリスト用HTMLを構築 */
-function buildChecklistHTML(targets){
-  const date=fmt(new Date().toISOString(),true);
-  let html=`<div style="padding:4px 0 8px;">
-    <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:2px;font-family:'Noto Sans JP',sans-serif;">業務準備チェックリスト</div>
-    <div style="font-size:9px;color:#888;margin-bottom:10px;font-family:'Noto Sans JP',sans-serif;">${date}</div>`;
+  // まず高さを計算
+  let totalH=PAD*2 + 24*PX + 14*PX; // タイトル+日付
   for(const cat of targets){
-    html+=`<div style="margin-bottom:8px;">
-      <div style="background:#3d3860;color:#f0ece4;font-size:10px;font-weight:700;padding:4px 8px;border-radius:4px;margin-bottom:3px;font-family:'Noto Sans JP',sans-serif;">${cat.name}</div>`;
+    totalH+=CAT_H+6*PX;
     for(const item of cat.items){
-      const chkBg=item.done?"#7eb8a4":"#ffffff";
-      const chkBorder=item.done?"#7eb8a4":"#999acc";
-      const chkMark=item.done?`<span style="color:#fff;font-size:9px;font-weight:700;">✓</span>`:"";
-      const textDeco=item.done?"text-decoration:line-through;color:#aaaaaa":"color:#1a1a2e";
-      const ts=item.done&&item.checkedAt?`<div style="font-size:8px;color:#aaaacc;padding-left:18px;font-family:'Noto Sans JP',sans-serif;">${fmt(item.checkedAt)}</div>`:"";
-      html+=`<div style="padding:2px 2px;border-bottom:1px solid #eeeeee;">
-        <div style="display:flex;align-items:center;gap:5px;">
-          <div style="width:12px;height:12px;border-radius:2px;border:1.5px solid ${chkBorder};background:${chkBg};flex-shrink:0;display:flex;align-items:center;justify-content:center;">${chkMark}</div>
-          <span style="font-size:10px;${textDeco};font-family:'Noto Sans JP',sans-serif;">${item.text}</span>
-        </div>${ts}
-      </div>`;
-      if(item.hasNotes&&item.notes){
-        html+=`<div style="font-size:9px;color:#666;padding:1px 2px 3px 19px;font-family:'Noto Sans JP',sans-serif;">${item.notes}</div>`;
-      }
+      totalH+=ROW;
+      if(item.done&&item.checkedAt) totalH+=12*PX;
+      if(item.hasNotes&&item.notes) totalH+=12*PX;
     }
-    html+=`</div>`;
+    totalH+=8*PX;
   }
-  html+=`</div>`;
-  return html;
+
+  const canvas=document.createElement("canvas");
+  canvas.width=CW; canvas.height=totalH;
+  const ctx=canvas.getContext("2d");
+
+  // 白背景
+  ctx.fillStyle="#ffffff";
+  ctx.fillRect(0,0,CW,totalH);
+
+  let y=PAD;
+
+  // タイトル
+  ctx.font=FONT_TITLE;
+  ctx.fillStyle="#1a1a2e";
+  ctx.fillText("業務準備チェックリスト",PAD,y+16*PX);
+  y+=24*PX;
+
+  // 日付
+  ctx.font=FONT_SM;
+  ctx.fillStyle="#888888";
+  ctx.fillText(fmt(new Date().toISOString(),true),PAD,y+10*PX);
+  y+=14*PX+8*PX;
+
+  for(const cat of targets){
+    // カテゴリヘッダー
+    ctx.fillStyle="#3d3860";
+    roundRect(ctx,PAD,y,CW-PAD*2,CAT_H,5*PX);
+    ctx.fill();
+    ctx.font=FONT_CAT;
+    ctx.fillStyle="#f0ece4";
+    ctx.fillText(cat.name,PAD+8*PX,y+CAT_H/2+4*PX);
+    y+=CAT_H+6*PX;
+
+    for(const item of cat.items){
+      // 区切り線
+      ctx.strokeStyle="#eeeeee";
+      ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.moveTo(PAD,y+ROW);
+      ctx.lineTo(CW-PAD,y+ROW);
+      ctx.stroke();
+
+      // チェックボックス
+      const chkX=PAD, chkY=y+ROW/2-6*PX;
+      const chkS=12*PX;
+      ctx.fillStyle=item.done?"#7eb8a4":"#ffffff";
+      ctx.strokeStyle=item.done?"#7eb8a4":"#999acc";
+      ctx.lineWidth=1.5;
+      roundRect(ctx,chkX,chkY,chkS,chkS,2*PX);
+      ctx.fill();ctx.stroke();
+      if(item.done){
+        ctx.font=`bold ${9*PX}px sans-serif`;
+        ctx.fillStyle="#ffffff";
+        ctx.fillText("✓",chkX+2*PX,chkY+9*PX);
+      }
+
+      // テキスト
+      ctx.font=FONT;
+      ctx.fillStyle=item.done?"#aaaaaa":"#1a1a2e";
+      const textX=PAD+chkS+6*PX;
+      ctx.fillText(item.text,textX,y+ROW/2+4*PX);
+      if(item.done&&item.checkedAt){
+        ctx.font=FONT_SM;
+        ctx.fillStyle="#aaaacc";
+        ctx.fillText(fmt(item.checkedAt),textX,y+ROW+10*PX);
+        y+=12*PX;
+      }
+      if(item.hasNotes&&item.notes){
+        ctx.font=FONT_SM;
+        ctx.fillStyle="#666666";
+        ctx.fillText(item.notes.slice(0,40)+(item.notes.length>40?"…":""),textX,y+ROW+10*PX);
+        y+=12*PX;
+      }
+      y+=ROW;
+    }
+    y+=8*PX;
+  }
+  return canvas;
 }
 
-// 旧buildPDFHTML（互換のため残す）
-function buildPDFHTML(targets,lo,imgB64){ return buildChecklistHTML(targets); }
-
-function imgToB64(url){
-  return new Promise((res,rej)=>{
-    const img=new Image();img.crossOrigin="anonymous";
-    img.onload=()=>{const c=document.createElement("canvas");c.width=img.naturalWidth;c.height=img.naturalHeight;c.getContext("2d").drawImage(img,0,0);res(c.toDataURL("image/png"));};
-    img.onerror=()=>rej(new Error("fail"));img.src=url;
-  });
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
 }
 
 function render(){tab==="check"?renderCheck():tab==="history"?renderHist():renderLayout();}
