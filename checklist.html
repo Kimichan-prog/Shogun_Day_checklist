@@ -275,8 +275,8 @@ async function generatePDF(){
   overlay.classList.add("show");
   try{
     const{jsPDF}=window.jspdf;
-    const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
-    const A4W=210,A4H=297,M=14;
+    const doc=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
+    const A4W=297,A4H=210,M=14;
 
     // ── 1ページ目：チェックリスト（Canvas文字描画→jsPDF） ──
     const targets=cats.filter(c=>pdfSel[c.id]);
