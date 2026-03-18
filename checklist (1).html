@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="業務チェック">
+  <meta name="theme-color" content="#0f0f13">
+  <title>業務準備チェックリスト</title>
+  <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%E6%A5%AD%E5%8B%99%E6%BA%96%E5%82%99%E3%83%81%E3%82%A7%E3%83%83%E3%82%AF%E3%83%AA%E3%82%B9%E3%83%88%22%2C%22short_name%22%3A%22%E6%A5%AD%E5%8B%99%E3%83%81%E3%82%A7%E3%83%83%E3%82%AF%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f0f13%22%2C%22theme_color%22%3A%22%230f0f13%22%2C%22start_url%22%3A%22.%22%7D">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230f0f13'/%3E%3Crect x='36' y='44' width='108' height='14' rx='7' fill='%23e8b86d'/%3E%3Crect x='36' y='68' width='80' height='14' rx='7' fill='%237eb8a4'/%3E%3Crect x='36' y='92' width='94' height='14' rx='7' fill='%23a98fd4'/%3E%3Ccircle cx='24' cy='51' r='8' fill='%23e8b86d'/%3E%3Ccircle cx='24' cy='75' r='8' fill='%237eb8a4'/%3E%3Ccircle cx='24' cy='99' r='8' fill='%23a98fd4'/%3E%3C/svg%3E">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#0f0f13; --bg2:#16141f; --bg3:#1a1828;
+      --border:#2a2640; --border2:#3d3860;
+      --text1:#f0ece4; --text2:#cdc9c0; --text3:#a098c0; --text4:#6e6890;
+      --green:#7eb8a4; --amber:#e8b86d; --purple:#a98fd4;
+      --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+    }
+    html,body { height:100%; background:var(--bg); color:var(--text1);
+      font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',-apple-system,sans-serif;
+      -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; }
+    #app { display:flex; flex-direction:column; min-height:100dvh; }
+
+    .tab-bar { display:flex; background:#1a1825; border-bottom:1px solid var(--border);
+      padding:calc(var(--safe-top) + 8px) 16px 0; gap:4px; position:sticky; top:0; z-index:200; }
+    .tab-btn { flex:1; padding:10px 4px; font-size:13px; font-weight:600; color:var(--text4);
+      background:none; border:none; border-bottom:2px solid transparent; cursor:pointer;
+      transition:all 0.15s; letter-spacing:0.03em; font-family:inherit; }
+    .tab-btn.active { color:var(--amber); border-bottom-color:var(--amber); }
+
+    .hdr { background:#1a1825; border-bottom:1px solid var(--border); padding:14px 20px; }
+    .hdr-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .hdr-label { font-size:10px; letter-spacing:0.22em; color:var(--text3); margin-bottom:3px; font-weight:600; }
+    .hdr-title { font-size:20px; font-weight:700; color:var(--text1); }
+    .prog-wrap { position:relative; width:68px; height:68px; flex-shrink:0; }
+    .prog-wrap svg { transform:rotate(-90deg); display:block; }
+    .prog-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; line-height:1; }
+    .prog-num { display:block; font-size:14px; font-weight:700; color:var(--text1); }
+    .prog-sub { display:block; font-size:9px; color:var(--text3); margin-top:2px; }
+    .bar-track { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .bar-fill { height:100%; border-radius:2px; transition:width 0.4s ease,background 0.4s; }
+
+    .body { flex:1; overflow-y:auto; padding:16px 16px calc(var(--safe-bottom) + 32px);
+      max-width:640px; margin:0 auto; width:100%; }
+
+    .card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; margin-bottom:16px; overflow:hidden; }
+    .cat-hdr { display:flex; align-items:center; gap:10px; padding:14px 16px 12px; border-bottom:1px solid #1f1d2e; }
+    .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .cat-name-text { flex:1; font-size:15px; font-weight:600; color:var(--text1); cursor:pointer; }
+    .cat-name-input { flex:1; background:var(--bg); border:1px solid var(--border2); border-radius:6px;
+      padding:4px 10px; font-size:15px; font-weight:600; color:var(--text1); outline:none; }
+    .cat-count { font-size:12px; color:var(--text3); font-variant-numeric:tabular-nums; }
+    .icon-btn { background:none; border:none; color:var(--text4); cursor:pointer; font-size:14px;
+      padding:4px 6px; min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center; }
+
+    .item-list { padding:6px 16px 4px; }
+    .item-row { display:flex; align-items:center; gap:12px; padding:10px 0;
+      border-bottom:1px solid var(--bg3); transition:opacity 0.2s; }
+    .item-row:last-child { border-bottom:none; }
+    .chk { width:24px; height:24px; border-radius:6px; border:2px solid; background:transparent;
+      flex-shrink:0; display:flex; align-items:center; justify-content:center;
+      transition:all 0.15s; cursor:pointer; padding:0; }
+    .chk-mark { font-size:13px; color:#fff; font-weight:700; line-height:1; }
+    .item-text { flex:1; font-size:15px; color:var(--text2); line-height:1.4; cursor:pointer; }
+    .item-text.done { text-decoration:line-through; }
+    .item-ts { font-size:10px; color:var(--text4); white-space:nowrap; flex-shrink:0; }
+    .item-input { flex:1; background:var(--bg); border:1px solid var(--border2);
+      border-radius:6px; padding:4px 10px; font-size:15px; color:var(--text1); outline:none; }
+    .del-btn { background:none; border:none; color:#3a3658; cursor:pointer; font-size:14px;
+      padding:4px 6px; min-width:32px; min-height:32px; display:flex; align-items:center; justify-content:center; }
+
+    .notes-box { padding:4px 16px 12px 52px; }
+    .notes-label { font-size:11px; color:var(--text4); margin-bottom:5px; letter-spacing:0.05em; }
+    .notes-ta { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px;
+      padding:10px 12px; font-size:14px; color:var(--text2); outline:none; resize:vertical;
+      line-height:1.6; font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',-apple-system,sans-serif; min-height:80px; }
+    .notes-ta:focus { border-color:var(--border2); }
+
+    .add-item-row { display:flex; gap:8px; padding:10px 16px 12px; }
+    .add-item-input { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px;
+      padding:9px 13px; font-size:14px; color:var(--text2); outline:none; font-family:inherit; }
+    .add-item-btn { border:none; border-radius:8px; width:38px; height:38px; font-size:20px;
+      color:#fff; cursor:pointer; font-weight:600; display:flex; align-items:center;
+      justify-content:center; padding:0; line-height:1; flex-shrink:0; }
+
+    .add-cat-card { background:var(--bg2); border:1px dashed var(--border2); border-radius:14px; padding:14px 16px; margin-bottom:16px; }
+    .add-cat-label { font-size:10px; letter-spacing:0.2em; color:var(--text4); margin-bottom:8px; font-weight:600; }
+    .add-cat-row { display:flex; gap:8px; }
+    .add-cat-input { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px;
+      padding:9px 13px; font-size:14px; color:var(--text2); outline:none; font-family:inherit; }
+    .add-cat-btn { background:#3d3860; border:none; border-radius:8px; padding:9px 18px;
+      font-size:13px; color:var(--text1); cursor:pointer; font-weight:600; white-space:nowrap; font-family:inherit; }
+
+    /* 完了カード */
+    .complete-card { background:linear-gradient(135deg,#1a2e22,#162025);
+      border:1px solid #3a6050; border-radius:14px; padding:20px; margin-bottom:16px; text-align:center; }
+    .complete-card-title { font-size:13px; color:var(--green); font-weight:600; margin-bottom:6px; letter-spacing:0.05em; }
+    .complete-card-sub { font-size:12px; color:var(--text3); margin-bottom:16px; line-height:1.6; }
+    .complete-chk-row { display:flex; align-items:center; gap:12px; background:var(--bg2);
+      border:1px solid #3a6050; border-radius:10px; padding:14px 16px; cursor:pointer; text-align:left; }
+    .complete-chk-box { width:26px; height:26px; border-radius:7px; border:2px solid var(--green);
+      flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+    .complete-chk-box.checked { background:var(--green); border-color:var(--green); }
+    .complete-chk-label { flex:1; font-size:15px; font-weight:600; color:var(--text1); }
+    .complete-chk-date { font-size:11px; color:var(--green); flex-shrink:0; }
+
+    .footer { text-align:center; padding:4px 0 8px; }
+    .reset-btn { background:none; border:1px solid var(--border); border-radius:10px;
+      padding:10px 24px; font-size:13px; color:var(--text4); cursor:pointer; font-family:inherit; }
+    .confirm-row { display:flex; align-items:center; justify-content:center; gap:10px;
+      flex-wrap:wrap; font-size:13px; color:var(--text3); }
+    .confirm-yes { background:#7f3a3a; border:none; border-radius:8px; padding:8px 16px;
+      font-size:13px; color:#fff; cursor:pointer; font-family:inherit; }
+    .confirm-no { background:#2a2640; border:none; border-radius:8px; padding:8px 16px;
+      font-size:13px; color:var(--text2); cursor:pointer; font-family:inherit; }
+
+    /* 履歴タブ */
+    .history-body { flex:1; overflow-y:auto; padding:16px 16px calc(var(--safe-bottom)+32px);
+      max-width:640px; margin:0 auto; width:100%; }
+    .history-toprow { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    .history-title { font-size:16px; font-weight:700; color:var(--text1); }
+    .export-btn { background:#3d3860; border:none; border-radius:8px; padding:7px 14px;
+      font-size:12px; color:var(--text1); cursor:pointer; font-weight:600; font-family:inherit; }
+    .history-empty { text-align:center; padding:60px 20px; color:var(--text4); font-size:14px; line-height:2; }
+    .hcard { background:var(--bg2); border:1px solid var(--border); border-radius:14px; margin-bottom:12px; overflow:hidden; }
+    .hcard-hdr { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #1f1d2e; }
+    .hcard-date { font-size:15px; font-weight:700; color:var(--text1); flex:1; }
+    .hbadge { font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; }
+    .hbadge.done { background:#1a3028; color:var(--green); }
+    .hdel { background:none; border:none; color:var(--text4); cursor:pointer; font-size:13px; padding:4px 6px; }
+    .hitem { display:flex; align-items:center; gap:10px; padding:8px 16px;
+      border-bottom:0.5px solid var(--bg3); font-size:13px; }
+    .hitem:last-child { border-bottom:none; }
+    .hdot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .hitem-name { flex:1; color:var(--text2); }
+    .hitem-time { font-size:11px; color:var(--text4); white-space:nowrap; }
+    .hcard-foot { display:flex; align-items:center; gap:8px; padding:10px 16px;
+      background:#1a2e22; border-top:1px solid #3a6050; font-size:13px; color:var(--green); font-weight:600; }
+
+    #install-banner { display:none; position:fixed; bottom:calc(var(--safe-bottom)+12px);
+      left:16px; right:16px; background:#201c2e; border:1px solid var(--border2);
+      border-radius:14px; padding:14px 16px; z-index:300; }
+    #install-banner p { font-size:13px; color:var(--text2); line-height:1.6; margin-bottom:10px; }
+    #install-banner strong { color:var(--text1); }
+    .banner-close { background:#3d3860; border:none; border-radius:8px; padding:7px 16px;
+      font-size:12px; color:var(--text1); cursor:pointer; font-family:inherit; }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<div id="install-banner">
+  <p>📱 <strong>ホーム画面に追加</strong>するとアプリのように使えます！<br>
+  Safari の <strong>共有ボタン（□↑）</strong> →「ホーム画面に追加」をタップ</p>
+  <button class="banner-close" onclick="closeBanner()">閉じる</button>
+</div>
+<script>
+const DEFAULT_CATEGORIES=[
+  {id:"cat-1",name:"会場準備",color:"#e8b86d",items:[
+    {id:"i-1", text:"参加企業の数確認",           done:false,checkedAt:null},
+    {id:"i-2", text:"会議室のテーブル移動",         done:false,checkedAt:null},
+    {id:"i-3", text:"スクリーン設置",              done:false,checkedAt:null},
+    {id:"i-4a",text:"プロジェクター設置",           done:false,checkedAt:null},
+    {id:"i-4b",text:"筆記用具設置",               done:false,checkedAt:null},
+    {id:"i-4c",text:"各種資料設置",               done:false,checkedAt:null},
+    {id:"i-4d",text:"入口、会場内にゴミがないか確認", done:false,checkedAt:null},
+  ]},
+  {id:"cat-2",name:"資料準備",color:"#7eb8a4",items:[
+    {id:"i-4", text:"ファイルの発注（総務）",        done:false,checkedAt:null},
+    {id:"i-5", text:"ファイル内資料準備",            done:false,checkedAt:null},
+    {id:"i-6", text:"所長レジュメ",               done:false,checkedAt:null},
+    {id:"i-7b",text:"記入済ワークシート",            done:false,checkedAt:null},
+    {id:"i-7c",text:"他",done:false,checkedAt:null,hasNotes:true,notes:""},
+  ]},
+  {id:"cat-3",name:"設備・備品",color:"#a98fd4",items:[
+    {id:"i-7",text:"機器の動作確認",  done:false,checkedAt:null},
+    {id:"i-8",text:"消耗品の在庫確認", done:false,checkedAt:null},
+    {id:"i-9",text:"緊急連絡先の掲示確認",done:false,checkedAt:null},
+  ]},
+];
+
+function uid(){return "id-"+Math.random().toString(36).slice(2,9);}
+function fmt(iso,full){
+  if(!iso)return"—";
+  const d=new Date(iso);
+  const yy=d.getFullYear(),mo=d.getMonth()+1,dd=d.getDate();
+  const hh=String(d.getHours()).padStart(2,"0"),mm=String(d.getMinutes()).padStart(2,"0");
+  return full?`${yy}/${String(mo).padStart(2,"0")}/${String(dd).padStart(2,"0")} ${hh}:${mm}`:`${mo}/${dd} ${hh}:${mm}`;
+}
+function fmtLabel(iso){if(!iso)return"";const d=new Date(iso);return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;}
+
+function loadCats(){try{const s=localStorage.getItem("cl_cats_v3");return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));}catch{return JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));}}
+function loadHist(){try{const s=localStorage.getItem("cl_history");return s?JSON.parse(s):[]; }catch{return[];}}
+function saveCats(c){try{localStorage.setItem("cl_cats_v3",JSON.stringify(c));}catch{}}
+function saveHist(h){try{localStorage.setItem("cl_history",JSON.stringify(h));}catch{}}
+
+let cats=loadCats(), hist=loadHist();
+let editCat=null,editItem=null,newItemTxt={},newCatName="",showConfirm=false,tab="check";
+
+function prog(){
+  const total=cats.reduce((a,c)=>a+c.items.length,0);
+  const done=cats.reduce((a,c)=>a+c.items.filter(i=>i.done).length,0);
+  return{total,done,pct:total===0?0:Math.round(done/total*100)};
+}
+function allDone(){const{total,done}=prog();return total>0&&done===total;}
+
+function recordCompletion(){
+  const now=new Date().toISOString();
+  const entry={id:uid(),completedAt:now,
+    items:cats.flatMap(cat=>cat.items.map(item=>({
+      catName:cat.name,catColor:cat.color,text:item.text,
+      checkedAt:item.checkedAt,notes:item.notes||""
+    })))
+  };
+  hist=[entry,...hist]; saveHist(hist);
+  cats=cats.map(c=>({...c,items:c.items.map(i=>({...i,done:false,checkedAt:null}))}));
+  saveCats(cats); tab="history"; render();
+}
+
+function render(){tab==="check"?renderCheck():renderHist();}
+
+function renderCheck(){
+  const{total,done,pct}=prog();
+  const C=2*Math.PI*26,col=pct===100?"#7eb8a4":"#e8b86d";
+  const barBg=pct===100?"linear-gradient(90deg,#7eb8a4,#5fa38e)":"linear-gradient(90deg,#e8b86d,#d4943a)";
+
+  const catsHTML=cats.map(cat=>{
+    const cd=cat.items.filter(i=>i.done).length,ct=cat.items.length;
+    const itemsHTML=cat.items.map(item=>{
+      const notes=item.hasNotes?`<div class="notes-box"><div class="notes-label">その他・自由記入</div>
+        <textarea class="notes-ta" rows="3" placeholder="追加資料名・備考など自由に記入"
+          data-catid="${cat.id}" data-itemid="${item.id}">${(item.notes||"").replace(/</g,"&lt;")}</textarea></div>`:"";
+      const chkStyle=item.done?`background:${cat.color};border-color:${cat.color}`:`border-color:#555`;
+      const ts=item.done&&item.checkedAt?`<span class="item-ts">${fmt(item.checkedAt)}</span>`:"";
+      return `<div><div class="item-row" style="${item.done?"opacity:0.55":""}">
+        <button class="chk" style="${chkStyle}" data-action="toggle" data-catid="${cat.id}" data-itemid="${item.id}">
+          ${item.done?'<span class="chk-mark">✓</span>':""}
+        </button>
+        ${editItem===item.id
+          ?`<input class="item-input" autofocus value="${(item.text||"").replace(/"/g,"&quot;")}" data-action="edit-item" data-catid="${cat.id}" data-itemid="${item.id}">`
+          :`<span class="item-text${item.done?" done":""}" data-action="dbl-item" data-catid="${cat.id}" data-itemid="${item.id}">${item.text}</span>`}
+        ${ts}
+        <button class="del-btn" data-action="del-item" data-catid="${cat.id}" data-itemid="${item.id}">✕</button>
+      </div>${notes}</div>`;
+    }).join("");
+    return `<div class="card"><div class="cat-hdr">
+      <div class="dot" style="background:${cat.color}"></div>
+      ${editCat===cat.id
+        ?`<input class="cat-name-input" autofocus value="${(cat.name||"").replace(/"/g,"&quot;")}" data-action="edit-cat" data-catid="${cat.id}">`
+        :`<span class="cat-name-text" data-action="dbl-cat" data-catid="${cat.id}">${cat.name}</span>`}
+      <span class="cat-count">${cd}/${ct}</span>
+      <button class="icon-btn" data-action="del-cat" data-catid="${cat.id}">✕</button>
+    </div><div class="item-list">${itemsHTML}</div>
+    <div class="add-item-row">
+      <input class="add-item-input" placeholder="項目を追加..." value="${((newItemTxt[cat.id]||"")).replace(/"/g,"&quot;")}" data-action="new-item-input" data-catid="${cat.id}">
+      <button class="add-item-btn" style="background:${cat.color}" data-action="add-item" data-catid="${cat.id}">＋</button>
+    </div></div>`;
+  }).join("");
+
+  const completeCard=allDone()?`<div class="complete-card">
+    <div class="complete-card-title">✓ すべての項目が完了しました</div>
+    <div class="complete-card-sub">下のチェックを押すと、本日の完了記録が履歴に保存され<br>チェックリストがリセットされます。</div>
+    <div class="complete-chk-row" data-action="record-completion">
+      <div class="complete-chk-box"><span style="font-size:13px;color:#fff;font-weight:700;line-height:1"></span></div>
+      <span class="complete-chk-label">すべて完了しました</span>
+      <span class="complete-chk-date">${fmt(new Date().toISOString())}</span>
+    </div>
+  </div>`:"";
+
+  const footer=showConfirm
+    ?`<div class="confirm-row">チェックをすべてリセットしますか？
+        <button class="confirm-yes" data-action="reset-yes">リセット</button>
+        <button class="confirm-no" data-action="reset-no">キャンセル</button></div>`
+    :`<button class="reset-btn" data-action="show-confirm">チェックをリセット</button>`;
+
+  document.getElementById("app").innerHTML=`
+    <div class="tab-bar">
+      <button class="tab-btn active" data-action="tab-check">チェックリスト</button>
+      <button class="tab-btn" data-action="tab-hist">完了履歴${hist.length?` (${hist.length})`:""}</button>
+    </div>
+    <div class="hdr"><div class="hdr-row">
+      <div><div class="hdr-label">DAILY OPS</div><h1 class="hdr-title">業務準備チェックリスト</h1></div>
+      <div class="prog-wrap">
+        <svg width="68" height="68" viewBox="0 0 68 68">
+          <circle cx="34" cy="34" r="26" fill="none" stroke="#2a2640" stroke-width="5"/>
+          <circle cx="34" cy="34" r="26" fill="none" stroke="${col}" stroke-width="5"
+            stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}"
+            stroke-linecap="round" style="transition:stroke-dashoffset 0.5s ease"/>
+        </svg>
+        <div class="prog-text"><span class="prog-num">${pct}%</span><span class="prog-sub">${done}/${total}</span></div>
+      </div>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${barBg}"></div></div>
+    </div>
+    <div class="body">${catsHTML}${completeCard}
+      <div class="add-cat-card"><div class="add-cat-label">新しいカテゴリ</div>
+        <div class="add-cat-row">
+          <input class="add-cat-input" placeholder="カテゴリ名を入力..." value="${newCatName.replace(/"/g,"&quot;")}" data-action="new-cat-input">
+          <button class="add-cat-btn" data-action="add-cat">追加</button>
+        </div>
+      </div>
+      <div class="footer">${footer}</div>
+    </div>`;
+  attach();
+}
+
+function renderHist(){
+  const rows=hist.length===0
+    ?`<div class="history-empty">まだ完了記録がありません。<br>全項目をチェックして<br>「すべて完了しました」を押すと<br>ここに記録されます。</div>`
+    :hist.map(e=>{
+      const items=e.items.map(i=>`<div class="hitem">
+        <div class="hdot" style="background:${i.catColor}"></div>
+        <span class="hitem-name">${i.text}${i.notes?` <span style="color:var(--text4);font-size:11px">— ${i.notes.slice(0,20)}${i.notes.length>20?"…":""}</span>`:""}</span>
+        <span class="hitem-time">${fmt(i.checkedAt)}</span>
+      </div>`).join("");
+      return `<div class="hcard"><div class="hcard-hdr">
+        <span class="hcard-date">${fmtLabel(e.completedAt)}</span>
+        <span class="hbadge done">完了</span>
+        <button class="hdel" data-action="del-hist" data-histid="${e.id}">✕</button>
+      </div>${items}
+      <div class="hcard-foot">✓ 完了記録：${fmt(e.completedAt,true)}</div></div>`;
+    }).join("");
+
+  document.getElementById("app").innerHTML=`
+    <div class="tab-bar">
+      <button class="tab-btn" data-action="tab-check">チェックリスト</button>
+      <button class="tab-btn active" data-action="tab-hist">完了履歴${hist.length?` (${hist.length})`:""}</button>
+    </div>
+    <div class="history-body">
+      <div class="history-toprow">
+        <span class="history-title">完了履歴</span>
+        ${hist.length?`<button class="export-btn" data-action="export-csv">CSVで書き出し</button>`:""}
+      </div>
+      ${rows}
+    </div>`;
+  attach();
+}
+
+function attach(){
+  document.querySelectorAll(".notes-ta").forEach(ta=>{
+    ta.addEventListener("input",e=>{
+      const{catid,itemid}=e.target.dataset;
+      cats=cats.map(c=>c.id!==catid?c:{...c,items:c.items.map(i=>i.id!==itemid?i:{...i,notes:e.target.value})});
+      saveCats(cats);
+    });
+  });
+  document.querySelectorAll('[data-action="new-item-input"]').forEach(el=>{
+    el.addEventListener("input",e=>{newItemTxt[e.target.dataset.catid]=e.target.value;});
+    el.addEventListener("keydown",e=>{if(e.key==="Enter")addItem(e.target.dataset.catid);});
+  });
+  const nci=document.querySelector('[data-action="new-cat-input"]');
+  if(nci){nci.addEventListener("input",e=>{newCatName=e.target.value;});nci.addEventListener("keydown",e=>{if(e.key==="Enter")addCat();});}
+  document.querySelectorAll('[data-action="edit-item"]').forEach(el=>{
+    el.addEventListener("blur",()=>{editItem=null;render();});
+    el.addEventListener("keydown",e=>{if(e.key==="Enter"){editItem=null;render();}});
+    el.addEventListener("input",e=>{const{catid,itemid}=e.target.dataset;cats=cats.map(c=>c.id!==catid?c:{...c,items:c.items.map(i=>i.id!==itemid?i:{...i,text:e.target.value})});saveCats(cats);});
+  });
+  document.querySelectorAll('[data-action="edit-cat"]').forEach(el=>{
+    el.addEventListener("blur",()=>{editCat=null;render();});
+    el.addEventListener("keydown",e=>{if(e.key==="Enter"){editCat=null;render();}});
+    el.addEventListener("input",e=>{const{catid}=e.target.dataset;cats=cats.map(c=>c.id!==catid?c:{...c,name:e.target.value});saveCats(cats);});
+  });
+  const af=document.querySelector("[autofocus]");
+  if(af){af.focus();const v=af.value;af.value="";af.value=v;}
+}
+
+function addItem(catId){
+  const text=(newItemTxt[catId]||"").trim();if(!text)return;
+  cats=cats.map(c=>c.id!==catId?c:{...c,items:[...c.items,{id:uid(),text,done:false,checkedAt:null}]});
+  newItemTxt[catId]="";saveCats(cats);render();
+}
+function addCat(){
+  const name=newCatName.trim();if(!name)return;
+  const colors=["#e87d7d","#e8b86d","#7eb8a4","#a98fd4","#6d9ee8"];
+  cats=[...cats,{id:uid(),name,color:colors[cats.length%colors.length],items:[]}];
+  newCatName="";saveCats(cats);render();
+}
+function exportCSV(){
+  if(!hist.length)return;
+  let csv="\uFEFF完了日時,カテゴリ,項目,チェック日時,備考\n";
+  hist.forEach(e=>e.items.forEach(i=>{
+    csv+=[fmt(e.completedAt,true),i.catName,i.text,fmt(i.checkedAt,true),(i.notes||"").replace(/"/g,'""')].map(v=>`"${v}"`).join(",")+"\n";
+  }));
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));
+  a.download="checklist_history.csv";a.click();
+}
+
+document.getElementById("app").addEventListener("click",e=>{
+  const el=e.target.closest("[data-action]");if(!el)return;
+  const{action,catid,itemid,histid}=el.dataset;
+  if(action==="tab-check"){tab="check";render();}
+  else if(action==="tab-hist"){tab="history";render();}
+  else if(action==="toggle"){
+    const now=new Date().toISOString();
+    cats=cats.map(c=>c.id!==catid?c:{...c,items:c.items.map(i=>i.id!==itemid?i:{...i,done:!i.done,checkedAt:i.done?null:now})});
+    saveCats(cats);render();
+  }
+  else if(action==="del-item"){cats=cats.map(c=>c.id!==catid?c:{...c,items:c.items.filter(i=>i.id!==itemid)});saveCats(cats);render();}
+  else if(action==="del-cat"){cats=cats.filter(c=>c.id!==catid);saveCats(cats);render();}
+  else if(action==="add-item"){addItem(catid);}
+  else if(action==="add-cat"){addCat();}
+  else if(action==="show-confirm"){showConfirm=true;render();}
+  else if(action==="reset-yes"){cats=cats.map(c=>({...c,items:c.items.map(i=>({...i,done:false,checkedAt:null}))}));showConfirm=false;saveCats(cats);render();}
+  else if(action==="reset-no"){showConfirm=false;render();}
+  else if(action==="record-completion"){recordCompletion();}
+  else if(action==="del-hist"){hist=hist.filter(h=>h.id!==histid);saveHist(hist);render();}
+  else if(action==="export-csv"){exportCSV();}
+});
+
+let lastTap={el:null,time:0};
+document.getElementById("app").addEventListener("click",e=>{
+  const el=e.target.closest('[data-action="dbl-item"],[data-action="dbl-cat"]');if(!el)return;
+  const now=Date.now();
+  if(lastTap.el===el&&now-lastTap.time<400){
+    const{action,catid,itemid}=el.dataset;
+    if(action==="dbl-item"){editItem=itemid;render();}
+    else if(action==="dbl-cat"){editCat=catid;render();}
+    lastTap={el:null,time:0};
+  }else{lastTap={el,time:now};}
+});
+
+function closeBanner(){document.getElementById("install-banner").style.display="none";localStorage.setItem("banner_closed","1");}
+function maybeShowBanner(){
+  if(localStorage.getItem("banner_closed"))return;
+  if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.navigator.standalone)
+    setTimeout(()=>{document.getElementById("install-banner").style.display="block";},2000);
+}
+render();maybeShowBanner();
+</script>
+</body>
+</html>
