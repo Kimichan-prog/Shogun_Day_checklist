@@ -333,9 +333,11 @@ async function generatePDF(){
 /* PDF用HTMLを白背景で構築（チェックリスト＋レイアウト画像を1枚に） */
 function buildPDFHTML(targets,lo){
   const date=fmt(new Date().toISOString(),true);
-  // 左右2カラム：左=チェックリスト、右=レイアウト画像
   const hasLayout=lo!=null;
-  const listWidth=hasLayout?"55%":"100%";
+  // 固定px幅で管理（%はhtml2canvasで崩れやすい）
+  const totalW=740;
+  const listW=hasLayout?400:totalW;
+  const imgColW=totalW-listW-12;
 
   let listHTML=`
     <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:3px;font-family:'Noto Sans JP',sans-serif;">業務準備チェックリスト</div>
@@ -363,15 +365,15 @@ function buildPDFHTML(targets,lo){
 
   let layoutHTML="";
   if(hasLayout){
-    layoutHTML=`<div style="display:flex;flex-direction:column;gap:8px;">
-      <div style="font-size:11px;font-weight:700;color:#1a1a2e;padding:5px 8px;background:#f0ece4;border-radius:5px;font-family:'Noto Sans JP',sans-serif;">レイアウト：${lo.label}</div>
-      <img src="${lo.url}" crossorigin="anonymous" style="width:100%;border-radius:6px;border:1px solid #dddddd;" onerror="this.style.display='none'">
+    layoutHTML=`<div style="width:${imgColW}px;">
+      <div style="font-size:11px;font-weight:700;color:#1a1a2e;padding:5px 8px;background:#f0ece4;border-radius:5px;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif;">レイアウト：${lo.label}</div>
+      <img src="${lo.url}" crossorigin="anonymous" style="width:${imgColW}px;max-width:${imgColW}px;height:auto;border-radius:6px;border:1px solid #dddddd;display:block;" onerror="this.style.display='none'">
     </div>`;
   }
 
-  return`<div style="display:flex;gap:16px;align-items:flex-start;padding:8px;background:#ffffff;width:560px;">
-    <div style="width:${listWidth};flex-shrink:0;">${listHTML}</div>
-    ${hasLayout?`<div style="flex:1;">${layoutHTML}</div>`:""}
+  return`<div style="display:flex;flex-direction:row;gap:12px;align-items:flex-start;padding:8px;background:#ffffff;width:${totalW}px;">
+    <div style="width:${listW}px;flex-shrink:0;">${listHTML}</div>
+    ${hasLayout?`<div style="width:${imgColW}px;flex-shrink:0;">${layoutHTML}</div>`:""}
   </div>`;
 }
 
