@@ -158,7 +158,15 @@
 </div>
 <script>
 const DEFAULT_CATEGORIES=[
-  {id:"cat-1",name:"会場準備",color:"#e8b86d",items:[
+ {id:"cat-1",name:"事前準備（●日前まで）",color:"#e8b86d",items:[
+    {id:"i-1", text:"日程確認",           done:false,checkedAt:null},
+    {id:"i-2", text:"参加企業の数確認",         done:false,checkedAt:null},
+    {id:"i-3", text:"企業の参加人数確認",              done:false,checkedAt:null},
+    {id:"i-4a",text:"弁当発注のお願い（総務）",           done:false,checkedAt:null},
+    {id:"i-4b",text:"レイアウト決定",               done:false,checkedAt:null},
+    {id:"i-4c",text:"所長に報告",               done:false,checkedAt:null},
+  ]},
+  {id:"cat-2",name:"会場準備",color:"#e8b86d",items:[
     {id:"i-1", text:"参加企業の数確認",           done:false,checkedAt:null},
     {id:"i-2", text:"会議室のテーブル移動",         done:false,checkedAt:null},
     {id:"i-3", text:"スクリーン設置",              done:false,checkedAt:null},
@@ -167,7 +175,7 @@ const DEFAULT_CATEGORIES=[
     {id:"i-4c",text:"各種資料設置",               done:false,checkedAt:null},
     {id:"i-4d",text:"入口、会場内にゴミがないか確認", done:false,checkedAt:null},
   ]},
-  {id:"cat-2",name:"資料準備",color:"#7eb8a4",items:[
+  {id:"cat-3",name:"資料準備",color:"#7eb8a4",items:[
     {id:"i-4", text:"ファイルの発注（総務）",        done:false,checkedAt:null},
     {id:"i-5", text:"ファイル内資料準備",            done:false,checkedAt:null},
     {id:"i-6", text:"所長レジュメ",               done:false,checkedAt:null},
@@ -175,10 +183,10 @@ const DEFAULT_CATEGORIES=[
     {id:"i-7c",text:"業種別BAST",            done:false,checkedAt:null},
     {id:"i-8",text:"他",done:false,checkedAt:null,hasNotes:true,notes:""},
   ]},
-  {id:"cat-3",name:"設備・備品",color:"#a98fd4",items:[
-    {id:"i-7",text:"機器の動作確認",  done:false,checkedAt:null},
-    {id:"i-8",text:"消耗品の在庫確認", done:false,checkedAt:null},
-    {id:"i-9",text:"緊急連絡先の掲示確認",done:false,checkedAt:null},
+  {id:"cat-4",name:"MAS監査部との連携",color:"#a98fd4",items:[
+    {id:"i-7",text:"参加企業の情報共有",  done:false,checkedAt:null},
+    {id:"i-8",text:"MAP+の入力チェック", done:false,checkedAt:null},
+    {id:"i-9",text:"クロージングの方向性（担当・やる/やらないの判断・必要なし）",done:false,checkedAt:null},
   ]},
 ];
 
