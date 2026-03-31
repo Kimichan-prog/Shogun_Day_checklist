@@ -272,10 +272,7 @@ async function generatePDF(){
     const clAspect=clCanvas.height/clCanvas.width;
     let clW=maxW,clH=clW*clAspect;
     if(clH>maxH){clH=maxH;clW=clH/clAspect;}
-    const infoHeaderCanvas = drawEventInfoHeader();
-    const ihW = A4W - M * 2; // 182mm
-   const ihH = (ihW * infoHeaderCanvas.height) / infoHeaderCanvas.width; // Canvasの比率を維持
-    doc.addImage(infoHeaderCanvas.toDataURL("image/png"), "PNG", M, M, ihW, ihH);
+    doc.addImage(clCanvas.toDataURL("image/png"),"PNG",M,M,clW,clH);
 
     // 2ページ目：レイアウト画像＋イベント情報
     const lo=layoutSel?LAYOUTS.find(l=>l.id===layoutSel):null;
@@ -564,7 +561,7 @@ function renderLayout(){
       </div>
       <div class="event-field">
         <label class="event-field-label">参加企業名</label>
-        <input class="event-field-input" type="text" placeholder="例：株式会社〇〇様、△△商事様"
+        <input class="event-field-input" type="text" placeholder="例：株式会社〇〇様、△△商事"
           value="${eventInfo.companies.replace(/"/g,'&quot;')}" data-event-key="companies">
       </div>
       <div class="event-field">
