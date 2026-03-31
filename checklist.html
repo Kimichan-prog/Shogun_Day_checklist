@@ -272,7 +272,10 @@ async function generatePDF(){
     const clAspect=clCanvas.height/clCanvas.width;
     let clW=maxW,clH=clW*clAspect;
     if(clH>maxH){clH=maxH;clW=clH/clAspect;}
-    doc.addImage(clCanvas.toDataURL("image/png"),"PNG",M,M,clW,clH);
+    const infoHeaderCanvas = drawEventInfoHeader();
+    const ihW = A4W - M * 2; // 182mm
+    const ihH = (ihW * infoHeaderCanvas.height) / infoHeaderCanvas.width; // Canvasの比率を維持
+    doc.addImage(infoHeaderCanvas.toDataURL("image/png"), "PNG", M, M, ihW, ihH);
 
     // 2ページ目：レイアウト画像＋イベント情報
     const lo=layoutSel?LAYOUTS.find(l=>l.id===layoutSel):null;
@@ -323,7 +326,7 @@ async function generatePDF(){
 /* イベント情報ヘッダーをCanvasに描画（画像上部に表示） */
 function drawEventInfoHeader(){
   const PX=2;
-  const W=540*PX,H=22*PX;
+  const W=560*PX,H=22*PX;
   const c=document.createElement("canvas");
   c.width=W;c.height=H;
   const ctx=c.getContext("2d");
