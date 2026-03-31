@@ -167,7 +167,7 @@
 </div>
 <script>
 const DEFAULT_CATEGORIES=[
-  {id:"cat-1",name:"事前準備（14日前まで）",color:"#e8b86d",items:[
+  {id:"cat-1",name:"事前準備（●日前まで）",color:"#e8b86d",items:[
     {id:"i-1", text:"日程確認",               done:false,checkedAt:null},
     {id:"i-2", text:"参加企業の数確認",         done:false,checkedAt:null},
     {id:"i-3", text:"企業の参加人数確認",        done:false,checkedAt:null},
@@ -561,7 +561,7 @@ function renderLayout(){
       </div>
       <div class="event-field">
         <label class="event-field-label">参加企業名</label>
-        <input class="event-field-input" type="text" placeholder="例：株式会社〇〇様、△△商事"
+        <input class="event-field-input" type="text" placeholder="例：株式会社〇〇様"
           value="${eventInfo.companies.replace(/"/g,'&quot;')}" data-event-key="companies">
       </div>
       <div class="event-field">
