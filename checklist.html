@@ -60,7 +60,6 @@
     .add-cat-row{display:flex;gap:8px;}
     .add-cat-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 13px;font-size:14px;color:var(--text2);outline:none;font-family:inherit;}
     .add-cat-btn{background:#3d3860;border:none;border-radius:8px;padding:9px 18px;font-size:13px;color:var(--text1);cursor:pointer;font-weight:600;white-space:nowrap;font-family:inherit;}
-    /* 完了カード */
     .complete-card{background:linear-gradient(135deg,#1a2e22,#162025);border:1px solid #3a6050;border-radius:14px;padding:20px;margin-bottom:16px;text-align:center;}
     .complete-card-title{font-size:13px;color:var(--green);font-weight:600;margin-bottom:6px;letter-spacing:0.05em;}
     .complete-card-sub{font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.6;}
@@ -73,7 +72,6 @@
     .confirm-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--text3);}
     .confirm-yes{background:#7f3a3a;border:none;border-radius:8px;padding:8px 16px;font-size:13px;color:#fff;cursor:pointer;font-family:inherit;}
     .confirm-no{background:#2a2640;border:none;border-radius:8px;padding:8px 16px;font-size:13px;color:var(--text2);cursor:pointer;font-family:inherit;}
-    /* 履歴タブ */
     .history-body{flex:1;overflow-y:auto;padding:16px 16px calc(var(--safe-bottom)+32px);max-width:640px;margin:0 auto;width:100%;}
     .history-toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
     .history-title{font-size:16px;font-weight:700;color:var(--text1);}
@@ -106,8 +104,15 @@
     .layout-selected-preview{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px;}
     .layout-preview-hdr{padding:12px 16px 10px;border-bottom:1px solid #1f1d2e;font-size:13px;font-weight:600;color:var(--text3);}
     .layout-preview-hdr span{color:var(--amber);}
-    .layout-selected-preview img{width:100%;display:block;max-height:340px;object-fit:contain;background:#0f0f13;padding:8px;}
+    .layout-selected-preview img{width:100%;display:block;max-height:300px;object-fit:contain;background:#0f0f13;padding:8px;}
     .layout-none{text-align:center;padding:32px 20px;color:var(--text4);font-size:13px;line-height:1.8;background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-bottom:16px;}
+    /* イベント情報入力 */
+    .event-info-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;}
+    .event-info-title{font-size:11px;letter-spacing:0.15em;color:var(--text4);font-weight:600;margin-bottom:12px;}
+    .event-field{margin-bottom:10px;}
+    .event-field-label{font-size:11px;color:var(--text3);margin-bottom:5px;display:block;}
+    .event-field-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 13px;font-size:14px;color:var(--text1);outline:none;font-family:inherit;}
+    .event-field-input:focus{border-color:var(--border2);}
     .pdf-section{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;}
     .pdf-section-title{font-size:11px;letter-spacing:0.15em;color:var(--text4);font-weight:600;margin-bottom:12px;}
     .pdf-cat-select{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
@@ -118,13 +123,11 @@
     .pdf-download-btn{width:100%;background:linear-gradient(135deg,#2a4a3a,#1e3528);border:1px solid #3a6050;border-radius:10px;padding:14px;font-size:14px;font-weight:700;color:var(--green);cursor:pointer;font-family:inherit;letter-spacing:0.05em;transition:opacity 0.15s;}
     .pdf-download-btn:disabled{opacity:0.4;cursor:not-allowed;}
     .pdf-download-btn:not(:disabled):active{opacity:0.8;}
-    /* PDF生成中オーバーレイ */
     #pdf-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
     #pdf-overlay.show{display:flex;}
     #pdf-overlay p{color:#f0ece4;font-size:14px;font-weight:600;}
     .pdf-spinner{width:40px;height:40px;border:3px solid #3d3860;border-top-color:var(--amber);border-radius:50%;animation:spin 0.8s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    /* 完了確認モーダル */
     #complete-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;align-items:center;justify-content:center;padding:20px;}
     #complete-modal.show{display:flex;}
     .modal-box{background:#1a1825;border:1px solid #3a6050;border-radius:18px;padding:24px 20px;max-width:320px;width:100%;text-align:center;}
@@ -134,8 +137,6 @@
     .modal-btns{display:flex;gap:10px;}
     .modal-yes{flex:1;background:var(--green);border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;color:#0f1f18;cursor:pointer;font-family:inherit;}
     .modal-no{flex:1;background:#2a2640;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;font-family:inherit;}
-    /* PDF用隠し描画エリア */
-    #pdf-render{position:fixed;left:-9999px;top:0;width:390px;background:#ffffff;font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',-apple-system,sans-serif;color:#1a1a2e;padding:20px;}
     #install-banner{display:none;position:fixed;bottom:calc(var(--safe-bottom)+12px);left:16px;right:16px;background:#201c2e;border:1px solid var(--border2);border-radius:14px;padding:14px 16px;z-index:300;}
     #install-banner p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px;}
     #install-banner strong{color:var(--text1);}
@@ -144,8 +145,6 @@
 </head>
 <body>
 <div id="app"></div>
-
-<!-- 完了確認モーダル -->
 <div id="complete-modal">
   <div class="modal-box">
     <div class="modal-icon">✅</div>
@@ -157,25 +156,18 @@
     </div>
   </div>
 </div>
-
-<!-- PDF生成中オーバーレイ -->
 <div id="pdf-overlay">
   <div class="pdf-spinner"></div>
   <p>PDFを生成中...</p>
 </div>
-
-<!-- PDF用隠し描画エリア -->
-<div id="pdf-render"></div>
-
 <div id="install-banner">
   <p>📱 <strong>ホーム画面に追加</strong>するとアプリのように使えます！<br>
   Safari の <strong>共有ボタン（□↑）</strong> →「ホーム画面に追加」をタップ</p>
   <button class="banner-close" onclick="closeBanner()">閉じる</button>
 </div>
-
 <script>
 const DEFAULT_CATEGORIES=[
-  {id:"cat-1",name:"事前準備（●日前まで）",color:"#e8b86d",items:[
+  {id:"cat-1",name:"事前準備（14日前まで）",color:"#e8b86d",items:[
     {id:"i-1", text:"日程確認",               done:false,checkedAt:null},
     {id:"i-2", text:"参加企業の数確認",         done:false,checkedAt:null},
     {id:"i-3", text:"企業の参加人数確認",        done:false,checkedAt:null},
@@ -226,9 +218,11 @@ function fmtLabel(iso){if(!iso)return"";const d=new Date(iso);return`${d.getFull
 function loadCats(){try{const s=localStorage.getItem("cl_cats_v3");return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));}catch{return JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));}}
 function loadHist(){try{const s=localStorage.getItem("cl_history");return s?JSON.parse(s):[]; }catch{return[];}}
 function loadLS(){try{const s=localStorage.getItem("cl_layout");return s?JSON.parse(s):{selectedId:null,pdfCats:{}};}catch{return{selectedId:null,pdfCats:{}};}}
+function loadEventInfo(){try{const s=localStorage.getItem("cl_event_info");return s?JSON.parse(s):{date:"",companies:"",people:""};}catch{return{date:"",companies:"",people:""};}}
 function saveCats(c){try{localStorage.setItem("cl_cats_v3",JSON.stringify(c));}catch{}}
 function saveHist(h){try{localStorage.setItem("cl_history",JSON.stringify(h));}catch{}}
 function saveLS(){try{localStorage.setItem("cl_layout",JSON.stringify({selectedId:layoutSel,pdfCats:pdfSel}));}catch{}}
+function saveEventInfo(){try{localStorage.setItem("cl_event_info",JSON.stringify(eventInfo));}catch{}}
 
 let cats=loadCats(),hist=loadHist();
 const _ls=loadLS();
@@ -237,6 +231,7 @@ let layoutSel=_ls.selectedId;
 let pdfSel=_ls.pdfCats&&Object.keys(_ls.pdfCats).length>0
   ?_ls.pdfCats
   :Object.fromEntries(cats.map(c=>[c.id,c.id==="cat-1"]));
+let eventInfo=loadEventInfo();
 
 function prog(){
   const total=cats.reduce((a,c)=>a+c.items.length,0);
@@ -245,17 +240,9 @@ function prog(){
 }
 function allDone(){const{total,done}=prog();return total>0&&done===total;}
 
-/* ── 完了確認モーダル ── */
-function showCompleteModal(){
-  document.getElementById("complete-modal").classList.add("show");
-}
-document.getElementById("modal-no-btn").addEventListener("click",()=>{
-  document.getElementById("complete-modal").classList.remove("show");
-});
-document.getElementById("modal-yes-btn").addEventListener("click",()=>{
-  document.getElementById("complete-modal").classList.remove("show");
-  recordCompletion();
-});
+function showCompleteModal(){document.getElementById("complete-modal").classList.add("show");}
+document.getElementById("modal-no-btn").addEventListener("click",()=>{document.getElementById("complete-modal").classList.remove("show");});
+document.getElementById("modal-yes-btn").addEventListener("click",()=>{document.getElementById("complete-modal").classList.remove("show");recordCompletion();});
 
 function recordCompletion(){
   const now=new Date().toISOString();
@@ -267,47 +254,59 @@ function recordCompletion(){
 
 /* ══════════════════════════════════════
    PDF生成
-   1ページ目：jsPDFでテキスト直接描画（日本語はCanvasAPIで描画）
-   2ページ目：レイアウト画像（<img>タグ経由でcanvasに描画→jsPDF）
+   1ページ目：チェックリスト（Canvas描画）
+   2ページ目：レイアウト画像＋イベント情報テキスト合成
 ══════════════════════════════════════ */
 async function generatePDF(){
   const overlay=document.getElementById("pdf-overlay");
   overlay.classList.add("show");
   try{
     const{jsPDF}=window.jspdf;
-    const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+    const doc=new jsPDF({orientation:"portrait",unit:"mm",format:[210,297]});
     const A4W=210,A4H=297,M=14;
 
-    // ── 1ページ目：チェックリスト（Canvas文字描画→jsPDF） ──
+    // 1ページ目：チェックリスト
     const targets=cats.filter(c=>pdfSel[c.id]);
     const clCanvas=drawChecklistToCanvas(targets);
-    const maxW=A4W-M*2, maxH=A4H-M*2;
+    const maxW=A4W-M*2,maxH=A4H-M*2;
     const clAspect=clCanvas.height/clCanvas.width;
-    let clW=maxW, clH=clW*clAspect;
+    let clW=maxW,clH=clW*clAspect;
     if(clH>maxH){clH=maxH;clW=clH/clAspect;}
     doc.addImage(clCanvas.toDataURL("image/png"),"PNG",M,M,clW,clH);
 
-    // ── 2ページ目：レイアウト画像 ──
+    // 2ページ目：レイアウト画像＋イベント情報
     const lo=layoutSel?LAYOUTS.find(l=>l.id===layoutSel):null;
     if(lo){
       await new Promise((resolve)=>{
         const img=new Image();
-        // 同一オリジン画像なのでcrossOrigin不要
         img.onload=()=>{
-          doc.addPage();
-          const natW=img.naturalWidth, natH=img.naturalHeight;
+          doc.addPage([210,297],"portrait");
+          const natW=img.naturalWidth,natH=img.naturalHeight;
+          // イベント情報ヘッダー用に上部に余白を確保
+          const headerH=22; // mm
+          const availH=A4H-M*2-headerH;
           const aspect=natH/natW;
-          let iw=A4W-M*2, ih=iw*aspect;
-          if(ih>A4H-M*2){ih=A4H-M*2;iw=ih/aspect;}
+          let iw=A4W-M*2,ih=iw*aspect;
+          if(ih>availH){ih=availH;iw=ih/aspect;}
           const ox=M+(A4W-M*2-iw)/2;
-          // 一時canvasに描画してjsPDFへ
+          const oy=M+headerH;
+
+          // 画像をcanvasに描画
           const tc=document.createElement("canvas");
           tc.width=natW;tc.height=natH;
           tc.getContext("2d").drawImage(img,0,0);
-          doc.addImage(tc.toDataURL("image/png"),"PNG",ox,M,iw,ih);
+
+          // イベント情報をcanvasに合成（画像の上に重ねて描画）
+          const infoCanvas=drawEventInfoOnImage(tc,natW,natH,iw,ih);
+          doc.addImage(infoCanvas.toDataURL("image/png"),"PNG",ox,oy,iw,ih);
+
+          // イベント情報ヘッダー（画像の上）
+          const infoHeaderCanvas=drawEventInfoHeader();
+          doc.addImage(infoHeaderCanvas.toDataURL("image/png"),"PNG",M,M,A4W-M*2,headerH);
+
           resolve();
         };
-        img.onerror=()=>resolve(); // 失敗しても続行
+        img.onerror=()=>resolve();
         img.src=lo.url;
       });
     }
@@ -321,18 +320,73 @@ async function generatePDF(){
   }
 }
 
-/* Canvas APIで日本語テキストを直接描画してチェックリストを作成 */
+/* イベント情報ヘッダーをCanvasに描画（画像上部に表示） */
+function drawEventInfoHeader(){
+  const PX=2;
+  const W=540*PX,H=22*PX;
+  const c=document.createElement("canvas");
+  c.width=W;c.height=H;
+  const ctx=c.getContext("2d");
+
+  // 背景
+  ctx.fillStyle="#f7f5ff";
+  roundRect(ctx,0,0,W,H,6*PX);
+  ctx.fill();
+  ctx.strokeStyle="#3d3860";
+  ctx.lineWidth=1.5;
+  roundRect(ctx,0,0,W,H,6*PX);
+  ctx.stroke();
+
+  // テキスト
+  const FONT=`${10*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
+  const FONT_BOLD=`bold ${10*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
+  ctx.fillStyle="#3d3860";
+
+  const parts=[];
+  if(eventInfo.date) parts.push({label:"日付：",val:eventInfo.date});
+  if(eventInfo.companies) parts.push({label:"参加企業：",val:eventInfo.companies});
+  if(eventInfo.people) parts.push({label:"参加人数：",val:eventInfo.people+"名"});
+
+  let x=12*PX;
+  const y=H/2+4*PX;
+  for(const p of parts){
+    ctx.font=FONT;
+    ctx.fillStyle="#888888";
+    ctx.fillText(p.label,x,y);
+    x+=ctx.measureText(p.label).width+2*PX;
+    ctx.font=FONT_BOLD;
+    ctx.fillStyle="#1a1a2e";
+    ctx.fillText(p.val,x,y);
+    x+=ctx.measureText(p.val).width+20*PX;
+  }
+  return c;
+}
+
+/* レイアウト画像の左上角にイベント情報を小さく合成 */
+function drawEventInfoOnImage(imgCanvas,natW,natH,dispW,dispH){
+  // 表示サイズに合わせてcanvasを作成
+  const PX=2;
+  const W=Math.round(dispW*PX*3.78); // mm→px
+  const H=Math.round(dispH*PX*3.78);
+  const c=document.createElement("canvas");
+  c.width=natW;c.height=natH;
+  const ctx=c.getContext("2d");
+  // 元画像をそのまま描画
+  ctx.drawImage(imgCanvas,0,0);
+  return c;
+}
+
+/* チェックリストをCanvasに描画 */
 function drawChecklistToCanvas(targets){
-  const PX=2; // 解像度倍率
+  const PX=2;
   const CW=560*PX;
   const FONT=`${11*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
   const FONT_SM=`${9*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
   const FONT_TITLE=`bold ${15*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
   const FONT_CAT=`bold ${10*PX}px 'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif`;
-  const PAD=14*PX, ROW=20*PX, CAT_H=22*PX;
+  const PAD=14*PX,ROW=20*PX,CAT_H=22*PX;
 
-  // まず高さを計算
-  let totalH=PAD*2 + 24*PX + 14*PX; // タイトル+日付
+  let totalH=PAD*2+24*PX+14*PX;
   for(const cat of targets){
     totalH+=CAT_H+6*PX;
     for(const item of cat.items){
@@ -344,49 +398,31 @@ function drawChecklistToCanvas(targets){
   }
 
   const canvas=document.createElement("canvas");
-  canvas.width=CW; canvas.height=totalH;
+  canvas.width=CW;canvas.height=totalH;
   const ctx=canvas.getContext("2d");
-
-  // 白背景
   ctx.fillStyle="#ffffff";
   ctx.fillRect(0,0,CW,totalH);
 
   let y=PAD;
-
-  // タイトル
-  ctx.font=FONT_TITLE;
-  ctx.fillStyle="#1a1a2e";
+  ctx.font=FONT_TITLE;ctx.fillStyle="#1a1a2e";
   ctx.fillText("業務準備チェックリスト",PAD,y+16*PX);
   y+=24*PX;
-
-  // 日付
-  ctx.font=FONT_SM;
-  ctx.fillStyle="#888888";
+  ctx.font=FONT_SM;ctx.fillStyle="#888888";
   ctx.fillText(fmt(new Date().toISOString(),true),PAD,y+10*PX);
   y+=14*PX+8*PX;
 
   for(const cat of targets){
-    // カテゴリヘッダー
     ctx.fillStyle="#3d3860";
     roundRect(ctx,PAD,y,CW-PAD*2,CAT_H,5*PX);
     ctx.fill();
-    ctx.font=FONT_CAT;
-    ctx.fillStyle="#f0ece4";
+    ctx.font=FONT_CAT;ctx.fillStyle="#f0ece4";
     ctx.fillText(cat.name,PAD+8*PX,y+CAT_H/2+4*PX);
     y+=CAT_H+6*PX;
 
     for(const item of cat.items){
-      // 区切り線
-      ctx.strokeStyle="#eeeeee";
-      ctx.lineWidth=1;
-      ctx.beginPath();
-      ctx.moveTo(PAD,y+ROW);
-      ctx.lineTo(CW-PAD,y+ROW);
-      ctx.stroke();
-
-      // チェックボックス
-      const chkX=PAD, chkY=y+ROW/2-6*PX;
-      const chkS=12*PX;
+      ctx.strokeStyle="#eeeeee";ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(PAD,y+ROW);ctx.lineTo(CW-PAD,y+ROW);ctx.stroke();
+      const chkX=PAD,chkY=y+ROW/2-6*PX,chkS=12*PX;
       ctx.fillStyle=item.done?"#7eb8a4":"#ffffff";
       ctx.strokeStyle=item.done?"#7eb8a4":"#999acc";
       ctx.lineWidth=1.5;
@@ -397,21 +433,16 @@ function drawChecklistToCanvas(targets){
         ctx.fillStyle="#ffffff";
         ctx.fillText("✓",chkX+2*PX,chkY+9*PX);
       }
-
-      // テキスト
-      ctx.font=FONT;
-      ctx.fillStyle=item.done?"#aaaaaa":"#1a1a2e";
+      ctx.font=FONT;ctx.fillStyle=item.done?"#aaaaaa":"#1a1a2e";
       const textX=PAD+chkS+6*PX;
       ctx.fillText(item.text,textX,y+ROW/2+4*PX);
       if(item.done&&item.checkedAt){
-        ctx.font=FONT_SM;
-        ctx.fillStyle="#aaaacc";
+        ctx.font=FONT_SM;ctx.fillStyle="#aaaacc";
         ctx.fillText(fmt(item.checkedAt),textX,y+ROW+10*PX);
         y+=12*PX;
       }
       if(item.hasNotes&&item.notes){
-        ctx.font=FONT_SM;
-        ctx.fillStyle="#666666";
+        ctx.font=FONT_SM;ctx.fillStyle="#666666";
         ctx.fillText(item.notes.slice(0,40)+(item.notes.length>40?"…":""),textX,y+ROW+10*PX);
         y+=12*PX;
       }
@@ -424,8 +455,7 @@ function drawChecklistToCanvas(targets){
 
 function roundRect(ctx,x,y,w,h,r){
   ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
   ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
   ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
   ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);
@@ -519,15 +549,39 @@ function renderLayout(){
   const preview=selLo?`<div class="layout-selected-preview"><div class="layout-preview-hdr">選択中：<span>${selLo.label}</span></div>
     <img src="${selLo.url}" alt="${selLo.label}"></div>`:
     `<div class="layout-none">上のサムネイルからレイアウトを選択してください</div>`;
+
+  // イベント情報入力欄
+  const eventFields=`
+    <div class="event-info-card">
+      <div class="event-info-title">開催情報（PDFに記載されます）</div>
+      <div class="event-field">
+        <label class="event-field-label">日付</label>
+        <input class="event-field-input" type="text" placeholder="例：2026年4月1日"
+          value="${eventInfo.date.replace(/"/g,'&quot;')}" data-event-key="date">
+      </div>
+      <div class="event-field">
+        <label class="event-field-label">参加企業名</label>
+        <input class="event-field-input" type="text" placeholder="例：株式会社〇〇、△△商事"
+          value="${eventInfo.companies.replace(/"/g,'&quot;')}" data-event-key="companies">
+      </div>
+      <div class="event-field">
+        <label class="event-field-label">参加人数</label>
+        <input class="event-field-input" type="text" placeholder="例：12"
+          value="${eventInfo.people.replace(/"/g,'&quot;')}" data-event-key="people">
+      </div>
+    </div>`;
+
   const catRows=cats.map(c=>`<div class="pdf-cat-row" data-action="toggle-pdf-cat" data-catid="${c.id}">
     <div class="pdf-cat-chk${pdfSel[c.id]?" on":""}">${pdfSel[c.id]?'<span style="font-size:10px;color:#fff;font-weight:700">✓</span>':""}</div>
     <span class="pdf-cat-name">${c.name}</span></div>`).join("");
   const ok=Object.values(pdfSel).some(v=>v)||layoutSel;
+
   document.getElementById("app").innerHTML=`${tabBar("layout")}
     <div class="layout-body">
       <div class="layout-section-title">レイアウトを選択（タップで選択／もう一度タップで解除）</div>
       <div class="layout-grid">${grid}</div>
       ${preview}
+      ${eventFields}
       <div class="pdf-section">
         <div class="pdf-section-title">PDFに含めるチェックリストのセクション</div>
         <div class="pdf-cat-select">${catRows}</div>
@@ -540,6 +594,13 @@ function renderLayout(){
 function attach(){
   document.querySelectorAll(".notes-ta").forEach(ta=>{
     ta.addEventListener("input",e=>{const{catid,itemid}=e.target.dataset;cats=cats.map(c=>c.id!==catid?c:{...c,items:c.items.map(i=>i.id!==itemid?i:{...i,notes:e.target.value})});saveCats(cats);});
+  });
+  // イベント情報入力
+  document.querySelectorAll("[data-event-key]").forEach(el=>{
+    el.addEventListener("input",e=>{
+      eventInfo[e.target.dataset.eventKey]=e.target.value;
+      saveEventInfo();
+    });
   });
   document.querySelectorAll('[data-action="new-item-input"]').forEach(el=>{
     el.addEventListener("input",e=>{newItemTxt[e.target.dataset.catid]=e.target.value;});
